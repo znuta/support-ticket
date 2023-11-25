@@ -16,7 +16,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * path:
  *   /api/v1/comment/create:
  *     post:
  *       summary: Create a new comment
@@ -79,7 +78,6 @@ router.post(
 
 /**
  * @swagger
- * path:
  *   /api/v1/comment/{id}:
  *     get:
  *       summary: Get a comment by ID
@@ -123,7 +121,6 @@ router.get("/:id", requireAuth, getComment);
 
 /**
  * @swagger
- * path:
  *   /api/v1/comment/{id}:
  *     put:
  *       summary: Update a comment by ID

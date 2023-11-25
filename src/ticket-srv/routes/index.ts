@@ -30,7 +30,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/create:
  *     post:
  *       summary: Create a new ticket
@@ -97,7 +96,6 @@ router.post(
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/unassigned/tickets:
  *     get:
  *       summary: Get unassigned tickets
@@ -140,7 +138,6 @@ router.get(
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/support-agents/tickets:
  *     get:
  *       summary: Get tickets assigned to the requesting agent
@@ -183,7 +180,6 @@ router.get(
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/report:
  *     get:
  *       summary: Generate and export the ticket report
@@ -226,7 +222,6 @@ router.get(
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/assign/{id}:
  *     put:
  *       summary: Assign a ticket to the requesting agent
@@ -281,7 +276,6 @@ router.put(
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/{id}:
  *     get:
  *       summary: Get a specific ticket by ID
@@ -325,7 +319,6 @@ router.get("/:id", requireAuth, getTicket);
 
 /**
  * @swagger
- * path:
  *   /api/v1/ticket/{id}:
  *     put:
  *       summary: Update a specific ticket by ID

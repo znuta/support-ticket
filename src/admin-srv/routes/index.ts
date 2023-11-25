@@ -15,7 +15,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * path:
  *   /api/v1/admin/users:
  *     get:
  *       summary: Get all users
@@ -44,7 +43,6 @@ router.get("/users", requireAuth, roleBased(["admin"]), manageUsers);
 
 /**
  * @swagger
- * path:
  *   /api/v1/admin/assign-ticket:
  *     post:
  *       summary: Assign a ticket to an agent

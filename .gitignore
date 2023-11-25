@@ -1,0 +1,6 @@
+#ignore node_modules as this can be updated on system with npm update and the project.json file
+node_modules/*
+.vscode/*
+build/*
+dist/*
+.env

@@ -67,6 +67,8 @@ cd support-ticket-app
 
 # Run tests
 
+Remember to setup the environment variables
+
 npm test
 
 # Build and run the Docker containers.

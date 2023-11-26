@@ -11,9 +11,7 @@ services:
     environment:
       DATABASE_URL: "mongodb://mongo:27017/support-ticket"
       PORT: 8000
-      PASSWORD: ""
       DATABASE: "support-ticket"
-      USER: ""
       JWT_KEY: "rffdfw423ef423r3"
       ADMIN_EMAIL: "admin@test.info"
       ADMIN_PASSWORD: "adminPassword"

@@ -81,6 +81,12 @@ docker-compose up --build
     http://localhost:8000/api/v1/swagger/docs/
    ```
 
+### Root admin password
+
+A super admin is created imdiately the server start up, find the creadentials included in the docker-compose.yml file, in the environment section.
+
+when loggedin as admin you can create an agent.
+
 ## Issues Faced
 
 No significant issues were encountered during the development of the application.

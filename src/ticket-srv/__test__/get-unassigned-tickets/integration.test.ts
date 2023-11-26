@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -41,12 +39,15 @@ describe("Ticket Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
 
     // Agent should  ticket  to it self, with the obtained ticket ID and user token
     const agentsTicketResponse = await request(app)
       .get(`/api/v1/ticket/unassigned/tickets`)
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .expect(200);
   });
 });

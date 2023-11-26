@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -37,7 +35,10 @@ describe("Admin Service Integration Tests", () => {
       .expect(200);
 
     // Verify that the response contains user data
-    expect(getUsersResponse.body[0]).toHaveProperty("email", "test@test.com");
+    expect(getUsersResponse.body.data[0]).toHaveProperty(
+      "email",
+      "test@test.com"
+    );
   });
 
   it("should assign a ticket to an agent (admin only)", async () => {
@@ -70,7 +71,7 @@ describe("Admin Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
 
     // Attempt to assign the ticket to the agent as an admin
     const assignTicketResponse = await request(app)
@@ -78,7 +79,7 @@ describe("Admin Service Integration Tests", () => {
       .set("Authorization", `Bearer ${admin.token}`)
       .send({
         ticketId,
-        agentId: userAgentDetailsResponse.body.id,
+        agentId: userAgentDetailsResponse.body.data.id,
       })
       .expect(200);
 
@@ -142,7 +143,8 @@ describe("Admin Service Integration Tests", () => {
       .set("Authorization", `Bearer ${admin.token}`)
       .expect(201);
 
-    const { id: agentId, token: agentToken } = userAgentDetailsResponse.body;
+    const { id: agentId, token: agentToken } =
+      userAgentDetailsResponse.body.data;
 
     // Create a new ticket
     const createTicketResponse = await request(app)
@@ -154,7 +156,7 @@ describe("Admin Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
 
     // Attempt to assign the ticket to the agent as a non-admin user
     const assignTicketResponse = await request(app)

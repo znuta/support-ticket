@@ -8,18 +8,10 @@
 
 // Import necessary modules
 import mongoose, { Schema, Document } from "mongoose";
-
-// Define the CommentModel interface representing the structure of a Comment document
-interface CommentModel extends Document {
-  ticket: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
-  userRole: string;
-  text: string;
-  createdAt: Date;
-}
+import { CommentAttrs, CommentDoc, CommentModel } from "./commentInterface";
 
 // Define the mongoose schema for the Comment entity
-const commentSchema = new Schema<CommentModel>(
+const commentSchema = new Schema(
   {
     ticket: {
       type: mongoose.Schema.Types.ObjectId,
@@ -53,5 +45,13 @@ const commentSchema = new Schema<CommentModel>(
   }
 );
 
+// Define a static method to create a new Comment instance
+commentSchema.statics.build = (attrs: CommentAttrs) => {
+  return new Comment(attrs);
+};
+
 // Create the Comment model using the mongoose schema
-export const Comment = mongoose.model<CommentModel>("Comment", commentSchema);
+export const Comment = mongoose.model<CommentDoc, CommentModel>(
+  "Comment",
+  commentSchema
+);

@@ -186,6 +186,16 @@ router.get(
  *       tags: [Tickets]
  *       security:
  *         - bearerAuth: []
+ *       parameters:
+ *         - name: format
+ *           in: query
+ *           description: "The desired format of the report"
+ *           required: true
+ *           type: string
+ *           enum:
+ *             - csv
+ *             - json
+ *             - pdf
  *       responses:
  *         200:
  *           description: Ticket report generated successfully
@@ -343,9 +353,9 @@ router.get("/:id", requireAuth, getTicket);
  *                   type: string
  *                 description:
  *                   type: string
+ *                 status:
+ *                   type: string
  *               required:
- *                 - subject
- *                 - description
  *       responses:
  *         200:
  *           description: Ticket updated successfully

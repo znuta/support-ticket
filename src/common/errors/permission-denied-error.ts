@@ -11,7 +11,7 @@
  * @param {number} [statusCode] - Optional custom HTTP status code for the error.
  * @author Toyeeb Atunde
  */
-import { CustomResponse } from "./customResponse";
+import { CustomResponse, ErrorObject } from "./customResponse";
 
 export class NotAuthorizeError extends CustomResponse {
   /**
@@ -25,6 +25,12 @@ export class NotAuthorizeError extends CustomResponse {
    * @type {string}
    */
   reasons = "Please login or register to continue";
+
+  /**
+   * success represents the HTTP status type boolean.
+   * @type {boolean}
+   */
+  success = false;
 
   /**
    * Constructor for the NotAuthorizeError class.
@@ -56,7 +62,7 @@ export class NotAuthorizeError extends CustomResponse {
    * @method
    * @returns {Array<{message: string}>} - Serialized error format
    */
-  serializedError() {
-    return [{ message: this.reasons }];
+  serializedError(): ErrorObject[] {
+    return [{ message: this.reasons, success: this.success }];
   }
 }

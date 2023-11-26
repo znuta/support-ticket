@@ -10,7 +10,7 @@
  * @param {ValidationError[]} error - An array of express-validator errors representing the validation issues.
  * @author Toyeeb Atunde
  */
-import { CustomResponse } from "./customResponse";
+import { CustomResponse, ErrorObject } from "./customResponse";
 import { ValidationError } from "express-validator";
 
 export class validationError extends CustomResponse {
@@ -25,6 +25,12 @@ export class validationError extends CustomResponse {
    * @type {ValidationError[]}
    */
   error: ValidationError[];
+
+  /**
+   * success represents the HTTP status type boolean.
+   * @type {boolean}
+   */
+  success = false;
 
   /**
    * Constructor for the ValidationError class.
@@ -48,10 +54,10 @@ export class validationError extends CustomResponse {
    * @method
    * @returns {Array<{message: string, field: string}>} - Serialized validation error format
    */
-  serializedError() {
+  serializedError(): ErrorObject[] {
     return this.error.map((err) => {
       //@ts-ignore
-      return { message: err.msg, field: err.param };
+      return { message: err.msg, field: err.param, success: this.success };
     });
   }
 }

@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -41,27 +39,33 @@ describe("Comment Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
 
     // Agent should  ticket  to it self, with the obtained ticket ID and user token
     const updateTicketResponse = await request(app)
       .put(`/api/v1/ticket/assign/${ticketId}`)
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .expect(200);
 
     // Create a new comment with the obtained user token and ticket ID
     const createCommentResponse = await request(app)
       .post("/api/v1/comment/create")
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .send({
         ticketId,
         text: "This is a test comment",
-        userRole: userAgentDetailsResponse.body.role,
+        userRole: userAgentDetailsResponse.body.data.role,
       })
       .expect(201);
 
     // Verify that the comment was created successfully
-    expect(createCommentResponse.body).toHaveProperty(
+    expect(createCommentResponse.body.data).toHaveProperty(
       "text",
       "This is a test comment"
     );
@@ -97,11 +101,14 @@ describe("Comment Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
     // Agent should  ticket  to it self, with the obtained ticket ID and user token
     const updateTicketResponse = await request(app)
       .put(`/api/v1/ticket/assign/${ticketId}`)
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .expect(200);
     // Attempt to create a comment as a customer
     const createCommentResponse = await request(app)
@@ -110,12 +117,11 @@ describe("Comment Service Integration Tests", () => {
       .send({
         ticketId,
         text: "Invalid comment by customer",
-        userRole: "customer",
       })
       .expect(403);
 
     // Verify that the comment was not created due to the requirement
-    expect(createCommentResponse.body).toHaveProperty(
+    expect(createCommentResponse.body.error[0]).toHaveProperty(
       "message",
       "Permission denied. A support agent must comment first."
     );

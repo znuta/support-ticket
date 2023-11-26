@@ -12,6 +12,8 @@ import { Ticket } from "../../models";
 import json2csv from "json2csv";
 import pdfkit from "pdfkit";
 import fs from "fs";
+import { BadRequestError, NotFoundError } from "../../../common";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 // Define the controller function for generating and exporting a ticket report
 export const generateTicketReport = async (req: Request, res: Response) => {
@@ -27,9 +29,7 @@ export const generateTicketReport = async (req: Request, res: Response) => {
 
     // Check if there are closed tickets
     if (closedTickets.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No closed tickets found in the last one month." });
+      throw new NotFoundError("No closed tickets found in the last one month.");
     }
 
     // Convert tickets to the desired format (CSV or PDF)
@@ -70,10 +70,20 @@ export const generateTicketReport = async (req: Request, res: Response) => {
     res.setHeader("Content-type", contentType);
 
     // Send the report data
-    res.send(reportData);
-  } catch (error) {
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "Ticket report generated successfully",
+      data: reportData,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
     // Handle any errors and return a 500 response for internal server error
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

@@ -11,6 +11,8 @@ import { Request, Response } from "express";
 import { Comment } from "../../models";
 import { Ticket } from "../../../ticket-srv/models";
 import { BadRequestError, NotFoundError } from "../../../common";
+import { CreatedSuccessResponse } from "../../../common/success-response/created-success";
+import mongoose from "mongoose";
 
 // Controller function to create a new comment
 export const createComment = async (req: Request, res: Response) => {
@@ -22,7 +24,7 @@ export const createComment = async (req: Request, res: Response) => {
     const ticket = await Ticket.findById(ticketId);
 
     if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+      throw new NotFoundError("Ticket not found");
     }
 
     // Check if the requesting user has permission to comment on the ticket
@@ -31,7 +33,7 @@ export const createComment = async (req: Request, res: Response) => {
       req.currentUser?.id.toString() !== ticket.customer.toString() &&
       req.currentUser?.id.toString() !== ticket.assignedAgent?.toString()
     ) {
-      return res.status(403).json({ message: "Permission denied" });
+      throw new BadRequestError("Permission denied", 403);
     }
 
     // Check specific conditions for customer commenting
@@ -43,26 +45,37 @@ export const createComment = async (req: Request, res: Response) => {
       });
 
       if (!agentComment) {
-        return res.status(403).json({
-          message: "Permission denied. A support agent must comment first.",
-        });
+        throw new BadRequestError(
+          "Permission denied. A support agent must comment first.",
+          403
+        );
       }
     }
 
     // Create a new comment
-    const newComment = new Comment({
+    const newComment = Comment.build({
       ticket: ticketId,
-      user: req.currentUser?.id,
+      user: new mongoose.Types.ObjectId(req.currentUser?.id),
       text,
-      userRole: req.currentUser?.role,
+      userRole: req.currentUser?.role!,
     });
 
     await newComment.save();
 
-    res.status(201).json(newComment);
-  } catch (error) {
+    // Prepare the response with user details and token
+    // Create an instance of CreatedSuccessResponse
+    const successResponse = new CreatedSuccessResponse({
+      message: "Comment created successfully",
+      data: newComment,
+    });
+
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
     // Log and handle errors
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

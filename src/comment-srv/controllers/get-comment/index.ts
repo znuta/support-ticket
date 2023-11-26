@@ -10,7 +10,8 @@
 import { Request, Response } from "express";
 import { Comment } from "../../models";
 import { Ticket } from "../../../ticket-srv/models";
-import { BadRequestError } from "../../../common";
+import { BadRequestError, NotFoundError } from "../../../common";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 // Controller function to get details of a specific comment
 export const getComment = async (req: Request, res: Response) => {
@@ -25,14 +26,24 @@ export const getComment = async (req: Request, res: Response) => {
     const comment = await Comment.findById(commentId);
 
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      throw new NotFoundError("Comment not found");
     }
 
     // Return comment details
-    res.status(200).json(comment);
-  } catch (error) {
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "User details updated successfully",
+      data: comment,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
     // Log and handle errors
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

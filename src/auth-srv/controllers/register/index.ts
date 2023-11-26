@@ -16,6 +16,7 @@ import { User } from "../../models";
 import { BadRequestError, Password } from "../../../common";
 import jwt from "jsonwebtoken";
 import { UserDoc } from "../../models/UserInterface";
+import { CreatedSuccessResponse } from "../../../common/success-response/created-success";
 
 export const registerUser = async (req: Request, res: Response) => {
   // Extract user registration details from the request body
@@ -24,7 +25,7 @@ export const registerUser = async (req: Request, res: Response) => {
   // Check if the email is already registered
   const existingUser = (await User.findOne({ email })) as UserDoc[];
   if (existingUser) {
-    throw new BadRequestError("Email or email already registered");
+    throw new BadRequestError("Email already registered");
   }
 
   // Check user permissions for assigning roles
@@ -53,13 +54,17 @@ export const registerUser = async (req: Request, res: Response) => {
   );
 
   // Prepare the response with user details and token
-  const response = {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-    token: userJwt,
-  };
+  // Create an instance of CreatedSuccessResponse
+  const successResponse = new CreatedSuccessResponse({
+    message: "User created successfully",
+    data: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      token: userJwt,
+    },
+  });
 
-  // Send a 201 status with the response
-  res.status(201).send(response);
+  // Set the HTTP status code and send the serialized response
+  res.status(successResponse.statusCode).send(successResponse.serializedData());
 };

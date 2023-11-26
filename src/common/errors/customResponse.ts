@@ -22,6 +22,15 @@ export abstract class CustomResponse extends Error {
   abstract statusCode: number;
 
   /**
+   * success is an abstract property that must be implemented by subclasses.
+   * It represents the HTTP status type.
+   *
+   * @abstract
+   * @type {boolean}
+   */
+  abstract success: boolean;
+
+  /**
    * Constructor for the CustomResponse class.
    * @constructor
    * @param {string} message - Error message
@@ -43,5 +52,12 @@ export abstract class CustomResponse extends Error {
    * @method
    * @returns {Array<{message: string, field?: string}>} - Serialized error format
    */
-  abstract serializedError(): { message: string; field?: string }[];
+  abstract serializedError(): ErrorObject[];
+}
+
+export interface ErrorObject {
+  message: string;
+  field?: string;
+  success: boolean;
+  [key: string]: any;
 }

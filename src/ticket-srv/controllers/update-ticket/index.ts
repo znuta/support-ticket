@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { Ticket } from "../../models";
 import mongoose from "mongoose";
+import { BadRequestError, NotFoundError } from "../../../common";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 export const updateTicket = async (req: Request, res: Response) => {
   try {
@@ -11,7 +13,7 @@ export const updateTicket = async (req: Request, res: Response) => {
     const ticket = await Ticket.findById(ticketId);
 
     if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+      throw new NotFoundError("Ticket not found");
     }
 
     // Update ticket details
@@ -24,9 +26,20 @@ export const updateTicket = async (req: Request, res: Response) => {
 
     await ticket.save();
 
-    res.status(200).json({ message: "Ticket details updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "Ticket details updated successfully",
+      data: ticket,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
+    // Handle any errors and return a 500 response for internal server error
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

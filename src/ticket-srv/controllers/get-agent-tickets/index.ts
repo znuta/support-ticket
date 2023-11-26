@@ -8,6 +8,8 @@
 
 import { Request, Response } from "express";
 import { Ticket } from "../../models";
+import { BadRequestError } from "../../../common";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 // Define the controller function for retrieving agent's tickets
 export const getAgentTickets = async (req: Request, res: Response) => {
@@ -18,10 +20,20 @@ export const getAgentTickets = async (req: Request, res: Response) => {
     });
 
     // Send the retrieved tickets in the response
-    res.status(200).json(agentTickets);
-  } catch (error) {
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "Ticket fetched successfully",
+      data: agentTickets,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
     // Handle any errors and return a 500 response for internal server error
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

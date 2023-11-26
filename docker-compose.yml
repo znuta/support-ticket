@@ -16,7 +16,7 @@ services:
       USER: ""
       JWT_KEY: "rffdfw423ef423r3"
       ADMIN_EMAIL: "admin@test.info"
-      ADMIN_PASSWORD: "tfyfyddjxd"
+      ADMIN_PASSWORD: "adminPassword"
 
   mongo:
     image: mongo

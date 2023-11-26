@@ -12,7 +12,7 @@
  * @constructor
  * @author [Author Name]
  */
-import { CustomResponse } from "./customResponse";
+import { CustomResponse, ErrorObject } from "./customResponse";
 
 export class BadRequestError extends CustomResponse {
   /**
@@ -20,6 +20,12 @@ export class BadRequestError extends CustomResponse {
    * @type {number}
    */
   statusCode = 400;
+
+  /**
+   * success represents the HTTP status type boolean.
+   * @type {boolean}
+   */
+  success = false;
 
   /**
    * Constructor for the BadRequestError class.
@@ -46,7 +52,7 @@ export class BadRequestError extends CustomResponse {
    * @method
    * @returns {Array<{message: string}>} - Serialized error format
    */
-  serializedError() {
-    return [{ message: this.message }];
+  serializedError(): ErrorObject[] {
+    return [{ message: this.message, success: this.success }];
   }
 }

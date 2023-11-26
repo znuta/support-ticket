@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { User } from "../../models";
-import { BadRequestError, Password } from "../../../common";
+import { BadRequestError, NotFoundError, Password } from "../../../common";
 import jwt from "jsonwebtoken";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 /**
  * Implement update user details logic
@@ -19,7 +20,7 @@ export const updateUser = async (req: Request, res: Response) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new BadRequestError("User not found", 404);
+      throw new NotFoundError("User not found");
     }
 
     // Ensure that the requesting user has permission to update this user's details
@@ -34,9 +35,17 @@ export const updateUser = async (req: Request, res: Response) => {
     user.password = password;
     await user.save();
 
-    res.status(200).json({ message: "User details updated successfully" });
-  } catch (error) {
-    console.error(error);
-    throw new BadRequestError("Internal Server Error");
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "User details updated successfully",
+    });
+
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

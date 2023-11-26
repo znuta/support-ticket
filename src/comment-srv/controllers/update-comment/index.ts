@@ -10,7 +10,8 @@
 import { Request, Response } from "express";
 import { Comment } from "../../models";
 import { Ticket } from "../../../ticket-srv/models";
-import { BadRequestError } from "../../../common";
+import { BadRequestError, NotFoundError } from "../../../common";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 // Controller function to update details of a specific comment
 export const updateComment = async (req: Request, res: Response) => {
@@ -26,22 +27,31 @@ export const updateComment = async (req: Request, res: Response) => {
     const comment = await Comment.findById(commentId);
 
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      throw new NotFoundError("Comment not found");
     }
 
     // Check if the requesting user has permission to update the comment
     if (req.currentUser?.id.toString() !== comment.user.toString()) {
-      return res.status(403).json({ message: "Permission denied" });
+      throw new BadRequestError("Permission denied", 403);
     }
 
     // Update comment details
     comment.text = text;
     await comment.save();
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "Comment details updated successfully",
+      data: comment,
+    });
 
-    res.status(200).json({ message: "Comment details updated successfully" });
-  } catch (error) {
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
     // Log and handle errors
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };

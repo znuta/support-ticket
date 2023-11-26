@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -27,7 +25,7 @@ describe("Ticket Service Integration Tests", () => {
       })
       .expect(201);
 
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
 
     // Get ticket details with the obtained ticket ID and user token
     const getTicketResponse = await request(app)
@@ -35,6 +33,9 @@ describe("Ticket Service Integration Tests", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
-    expect(getTicketResponse.body).toHaveProperty("subject", "Test Ticket");
+    expect(getTicketResponse.body.data).toHaveProperty(
+      "subject",
+      "Test Ticket"
+    );
   });
 });

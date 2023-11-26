@@ -73,12 +73,20 @@ npm test
 
 docker-compose up --build
 
+### Support ticket API Doc
+
+1. Visit this provided swagger API doc:
+
+   ```bash
+    http://localhost:8000/api/v1/swagger/docs/
+   ```
+
 ## Issues Faced
 
 No significant issues were encountered during the development of the application.
 
 ## Constructive Feedback
 
-The assignment was comprehensive and well-structured. However, providing more specific details about the expected features and functionalities would enhance the clarity of the assignment.
+The assignment was comprehensive and well-structured.
 
 Feel free to reach out for any further clarification or assistance!

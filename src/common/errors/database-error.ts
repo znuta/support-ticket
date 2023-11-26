@@ -9,7 +9,7 @@
  * @constructor
  * @author Toyeeb Atunde
  */
-import { CustomResponse } from "./customResponse";
+import { CustomResponse, ErrorObject } from "./customResponse";
 
 export class DatabaseError extends CustomResponse {
   /**
@@ -23,6 +23,12 @@ export class DatabaseError extends CustomResponse {
    * @type {number}
    */
   statusCode = 500;
+
+  /**
+   * success represents the HTTP status type boolean.
+   * @type {boolean}
+   */
+  success = false;
 
   /**
    * Constructor for the DatabaseError class.
@@ -42,7 +48,7 @@ export class DatabaseError extends CustomResponse {
    * @method
    * @returns {Array<{message: string}>} - Serialized error format
    */
-  serializedError() {
-    return [{ message: this.databaseMessage }];
+  serializedError(): ErrorObject[] {
+    return [{ message: this.databaseMessage, success: this.success }];
   }
 }

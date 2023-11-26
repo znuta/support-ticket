@@ -1,6 +1,4 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../../app";
 
 declare const global: {
@@ -22,8 +20,7 @@ describe("User Service Integration Tests", () => {
     const response = await request(app)
       .post("/api/v1/user/login")
       .send(userData);
-
     expect(response.status).toBe(200);
-    expect(response.body.email).toBe(userData.email);
+    expect(response.body.data.email).toBe(userData.email);
   });
 });

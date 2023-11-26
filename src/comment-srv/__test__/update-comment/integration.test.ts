@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -37,27 +35,36 @@ describe("Comment Service Integration Tests", () => {
         description: "This is a test ticket",
       })
       .expect(201);
-    const ticketId = createTicketResponse.body.id;
+    const ticketId = createTicketResponse.body.data.id;
     // Agent should  ticket  to it self, with the obtained ticket ID and user token
     const updateTicketResponse = await request(app)
       .put(`/api/v1/ticket/assign/${ticketId}`)
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .expect(200);
     // Create a new comment with the obtained user token and ticket ID
     const createCommentResponse = await request(app)
       .post("/api/v1/comment/create")
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .send({
         ticketId,
         text: "This is a test comment",
         userRole: "agent",
       })
       .expect(201);
-    const commentId = createCommentResponse.body.id;
+    const commentId = createCommentResponse.body.data.id;
     // Update comment details with the obtained comment ID and user token
     const updateCommentResponse = await request(app)
       .put(`/api/v1/comment/${commentId}`)
-      .set("Authorization", `Bearer ${userAgentDetailsResponse.body.token}`)
+      .set(
+        "Authorization",
+        `Bearer ${userAgentDetailsResponse.body.data.token}`
+      )
       .send({
         text: "Updated test comment",
       })

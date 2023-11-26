@@ -1,19 +1,9 @@
 // Import necessary modules and types from mongoose
 import mongoose, { Schema, Document } from "mongoose";
-
-// Define the TicketModel interface, extending mongoose Document
-interface TicketModel extends Document {
-  customer: mongoose.Types.ObjectId;
-  subject: string;
-  description: string;
-  status: "open" | "closed";
-  createdAt: Date;
-  closedAt?: Date | null;
-  assignedAgent?: mongoose.Types.ObjectId | null;
-}
+import { TicketAttrs, TicketDoc, TicketModel } from "./ticketInterface";
 
 // Create a new mongoose schema for the Ticket entity
-const ticketSchema = new Schema<TicketModel>(
+const ticketSchema = new Schema(
   {
     // Define the 'customer' field with reference to the 'User' model
     customer: {
@@ -52,5 +42,13 @@ const ticketSchema = new Schema<TicketModel>(
   }
 );
 
+// Define a static method to create a new User instance
+ticketSchema.statics.build = (attrs: TicketAttrs) => {
+  return new Ticket(attrs);
+};
+
 // Create the Ticket model using the mongoose schema
-export const Ticket = mongoose.model<TicketModel>("Ticket", ticketSchema);
+export const Ticket = mongoose.model<TicketDoc, TicketModel>(
+  "Ticket",
+  ticketSchema
+);

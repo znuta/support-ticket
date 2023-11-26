@@ -9,7 +9,15 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for support ticket",
     },
+
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
       schemas: {
         SuccessResponse: {
           type: "object",
@@ -67,6 +75,19 @@ const swaggerOptions = {
         },
       },
     },
+    security: {
+      bearerAuth: [],
+    },
+    // securityDefinitions: {
+    //   BearerAuth: {
+    //     name: "Authorization",
+    //     scheme: "Bearer",
+    //     type: "Http",
+    //     bearerFormat: "JWT",
+    //     in: "Header",
+    //     description: 'Enter your JWT token in the format "Bearer <token>"',
+    //   },
+    // },
   },
 
   apis: [

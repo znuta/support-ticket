@@ -13,8 +13,9 @@
 // Import necessary modules and models
 import { Request, Response } from "express";
 import { User } from "../../models";
-import { BadRequestError, Password } from "../../../common";
+import { BadRequestError, NotFoundError, Password } from "../../../common";
 import jwt from "jsonwebtoken";
+import { OkSuccessResponse } from "../../../common/success-response/ok-success ";
 
 export const loginUser = async (req: Request, res: Response) => {
   // Extract user login details from the request body
@@ -23,7 +24,7 @@ export const loginUser = async (req: Request, res: Response) => {
   // Check if the user exists
   const existingUser = await User.findOne({ email });
   if (!existingUser) {
-    throw new BadRequestError("User not found", 404);
+    throw new NotFoundError("User not found");
   }
 
   // Compare provided password with stored password
@@ -46,13 +47,18 @@ export const loginUser = async (req: Request, res: Response) => {
   );
 
   // Prepare the response with user details and token
-  const response = {
-    id: existingUser.id,
-    email: existingUser.email,
-    role: existingUser.role,
-    token: userJwt,
-  };
+  // Create an instance of OkSuccessResponse
+  const successResponse = new OkSuccessResponse({
+    message: "User details updated successfully",
+    data: {
+      id: existingUser.id,
+      email: existingUser.email,
+      role: existingUser.role,
+      token: userJwt,
+    },
+  });
 
   // Send a 200 status with the response
-  res.status(200).send(response);
+  // Set the HTTP status code and send the serialized response
+  res.status(successResponse.statusCode).send(successResponse.serializedData());
 };

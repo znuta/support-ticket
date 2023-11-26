@@ -1,9 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+
 import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
 declare const global: {
   [key: string]: any;
 };
@@ -21,6 +19,6 @@ describe("User Service Integration Tests", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(200);
 
-    expect(userDetailsResponse.body).toHaveProperty("id", id);
+    expect(userDetailsResponse.body.data).toHaveProperty("id", id);
   });
 });

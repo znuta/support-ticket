@@ -1,9 +1,6 @@
 import request from "supertest";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { app } from "../../../app";
 
-let mongoServer: MongoMemoryServer;
+import { app } from "../../../app";
 
 describe("User Service Integration Tests", () => {
   it("should register a new user via API", async () => {
@@ -17,7 +14,7 @@ describe("User Service Integration Tests", () => {
       .send(userData);
 
     expect(response.status).toBe(201);
-    expect(response.body.email).toBe(userData.email);
+    expect(response.body.data.email).toBe(userData.email);
   });
 
   // Add other integration tests for loginUser, getUser, and updateUser

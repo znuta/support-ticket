@@ -10,7 +10,7 @@
  * @param {string} [reasons] - Optional custom reasons for the not found error.
  * @author Toyeeb Atunde
  */
-import { CustomResponse } from "./customResponse";
+import { CustomResponse, ErrorObject } from "./customResponse";
 
 export class NotFoundError extends CustomResponse {
   /**
@@ -26,13 +26,19 @@ export class NotFoundError extends CustomResponse {
   statusCode = 404;
 
   /**
+   * success represents the HTTP status type boolean.
+   * @type {boolean}
+   */
+  success = false;
+
+  /**
    * Constructor for the NotFoundError class.
    * @constructor
    * @param {string} [reasons] - Optional custom reasons for the not found error.
    */
   constructor(reasons?: string) {
     // Call the constructor of the base class (CustomResponse)
-    super("page not found!!!");
+    super(reasons || "page not found!!!");
 
     // Set custom reasons if provided
     if (reasons) {
@@ -49,7 +55,7 @@ export class NotFoundError extends CustomResponse {
    * @method
    * @returns {Array<{message: string}>} - Serialized error format
    */
-  serializedError() {
-    return [{ message: this.reasons }];
+  serializedError(): ErrorObject[] {
+    return [{ message: this.reasons, success: this.success }];
   }
 }

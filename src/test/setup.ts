@@ -86,7 +86,7 @@ global.signup = async (param: UserAttrs): Promise<object> => {
     })
     .expect(201);
 
-  const user = response.body;
+  const user = response.body.data;
 
   if (!user) {
     throw new Error("No token found in response body");
@@ -120,7 +120,7 @@ global.createAdmin = async (param: UserAttrs): Promise<UserDoc> => {
       })
       .expect(200);
 
-    const user = response.body;
+    const user = response.body.data;
 
     if (!user) {
       throw new Error("No token found in response body");
@@ -138,6 +138,6 @@ global.createAdmin = async (param: UserAttrs): Promise<UserDoc> => {
     })
     .expect(200);
 
-  const user = response.body;
+  const user = response.body.data;
   return user;
 };

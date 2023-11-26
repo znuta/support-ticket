@@ -10,7 +10,8 @@
 import { Request, Response } from "express";
 import { User } from "../../auth-srv/models";
 import { Ticket } from "../../ticket-srv/models";
-import { BadRequestError } from "../../common";
+import { BadRequestError, NotFoundError } from "../../common";
+import { OkSuccessResponse } from "../../common/success-response/ok-success ";
 
 /**
  * Fetch all users if the requesting user is an admin.
@@ -26,10 +27,20 @@ export const manageUsers = async (req: Request, res: Response) => {
     // Fetch all users
     const users = await User.find();
 
-    res.status(200).json(users);
-  } catch (error) {
-    console.error(error);
-    throw new BadRequestError("Internal Server Error", 500);
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "User fetched successfully",
+      data: users,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
+    res
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };
 
@@ -51,18 +62,26 @@ export const assignTicketToAgent = async (req: Request, res: Response) => {
     const agent = await User.findById(agentId);
 
     if (!ticket || !agent) {
-      throw new BadRequestError("Ticket or agent not found", 404);
+      throw new NotFoundError("Ticket or agent not found");
     }
 
     // Assign the ticket to the agent
     ticket.assignedAgent = agent.id;
     await ticket.save();
 
+    // Create an instance of OkSuccessResponse
+    const successResponse = new OkSuccessResponse({
+      message: "Ticket assigned to agent successfully",
+      data: ticket,
+    });
+
+    // Send a 200 status with the response
+    // Set the HTTP status code and send the serialized response
     res
-      .status(200)
-      .json({ message: "Ticket assigned to agent successfully", ticket });
-  } catch (error) {
-    console.error(error);
-    throw new BadRequestError("Internal Server Error", 500);
+      .status(successResponse.statusCode)
+      .send(successResponse.serializedData());
+  } catch (error: any) {
+    console.error(error.message, error.statusCode);
+    throw new BadRequestError(error.message, error.statusCode);
   }
 };
